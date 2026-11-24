@@ -12,6 +12,7 @@ def descargar_maximaDefinicion(url, carpeta_destino):
         'format': 'bestvideo+bestaudio/best',
         'restrictfilenames': True, 
         'cookiefile': ruta_cookies,  # <--- AQUÍ LE DECIMOS QUE USE LAS COOKIES
+        'source_address': '0.0.0.0',  # <-- Fuerza IPv4
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
