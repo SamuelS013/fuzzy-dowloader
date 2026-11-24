@@ -3,7 +3,7 @@ import os
 
 # IMPORTANTE: Asegúrate de que el archivo se llame modules.py 
 # y esté en la misma carpeta o en una carpeta llamada core/
-from modules import descargar_maximaDefinicion
+from core.modules import descargar_maximaDefinicion
 
 app = Flask(__name__)
 
