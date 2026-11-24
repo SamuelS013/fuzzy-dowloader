@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, send_file
 import os
-import tempfile
+
+# IMPORTANTE: Asegúrate de que el archivo se llame modules.py 
+# y esté en la misma carpeta o en una carpeta llamada core/
+from modules import descargar_maximaDefinicion
 
 app = Flask(__name__)
 
-# Carpeta temporal dentro del contenedor (se borra al reiniciar, es normal)
 TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
 
@@ -16,21 +18,30 @@ def index():
 def descargar_endpoint():
     datos = request.get_json()
     url = datos.get("url")
+    
     if not url:
         return jsonify({"error": "Falta la URL"}), 400
 
     try:
-        # === AQUÍ IRÁ TU LLAMADA AL CORE ===
-        # Por ahora, simulamos para probar que el deploy funciona
-        # ruta_archivo = mi_funcion_del_core(url, ...)
+        print(f"Iniciando descarga de: {url}")
         
-        # Placeholder: crea un archivo de prueba
-        ruta_archivo = os.path.join(TEMP_DIR, "prueba.txt")
-        with open(ruta_archivo, "w") as f:
-            f.write(f"Descarga simulada para: {url}")
+        # Llamamos a tu función real
+        ruta_archivo = descargar_maximaDefinicion(url, TEMP_DIR)
 
-        return send_file(ruta_archivo, as_attachment=True)
+        if not os.path.exists(ruta_archivo):
+            return jsonify({"error": "El archivo no se generó correctamente"}), 500
+
+        print(f"Archivo generado en: {ruta_archivo}")
+
+        # Enviamos el archivo al usuario
+        return send_file(
+            ruta_archivo, 
+            as_attachment=True, 
+            download_name=os.path.basename(ruta_archivo) 
+        )
+        
     except Exception as e:
+        print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-# NO pongas app.run() aquí. Gunicorn se encarga.
+# Gunicorn se encarga de ejecutar esto
